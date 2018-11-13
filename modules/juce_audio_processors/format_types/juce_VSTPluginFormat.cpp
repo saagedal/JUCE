@@ -1870,12 +1870,12 @@ struct VSTPluginInstance     : public AudioPluginInstance,
 
                 auto set = (fxProgramSet*) dest.getData();
                 set->chunkMagic = fxbName ("CcnK");
-                set->byteSize = 0;
+                set->byteSize = fxbSwap ((int) totalLen - 8);
                 set->fxMagic = fxbName ("FPCh");
                 set->version = fxbSwap (fxbVersionNum);
                 set->fxID = fxbSwap (getUID());
                 set->fxVersion = fxbSwap (getVersionNumber());
-                set->numPrograms = fxbSwap (numPrograms);
+                set->numPrograms = fxbSwap (getNumParameters());
                 set->chunkSize = fxbSwap ((int32) chunk.getSize());
 
                 getCurrentProgramName().copyToUTF8 (set->name, sizeof (set->name) - 1);
