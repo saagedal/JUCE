@@ -1656,8 +1656,8 @@ int PopupMenu::showWithOptionalCallback (const Options& options, ModalComponentM
         window->enterModalState (false, userCallbackDeleter.release());
         ModalComponentManager::getInstance()->attachCallback (window, callback.release());
 
-        window->toFront (false);  // need to do this after making it modal, or it could
-                                  // be stuck behind other comps that are already modal..
+        window->toFront (true);  // need to do this after making it modal, or it could
+                                 // be stuck behind other comps that are already modal..
 
        #if JUCE_MODAL_LOOPS_PERMITTED
         if (userCallback == nullptr && canBeModal)
