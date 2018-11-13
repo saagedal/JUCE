@@ -43,6 +43,20 @@ public:
     ~AudioUnitPluginFormat();
 
     //==============================================================================
+    /** Attempts to reload an AU plugin's state from some preset file data.
+
+        @see VSTPluginFormat::loadFromFXBFile
+    */
+    static bool setStateFromAUPresetFile (AudioPluginInstance*, const MemoryBlock&);
+
+    //==============================================================================
+    /** Attempts to save an AU plugin's state to some preset file data.
+
+        @see VSTPluginFormat::saveToFXBFile
+    */
+	static bool saveStateToAUPresetFile (AudioPluginInstance*, MemoryBlock&);
+
+    //==============================================================================
     String getName() const override                { return "AudioUnit"; }
     void findAllTypesForFile (OwnedArray<PluginDescription>&, const String& fileOrIdentifier) override;
     bool fileMightContainThisPluginType (const String& fileOrIdentifier) override;

@@ -51,6 +51,13 @@ public:
     static bool setStateFromVSTPresetFile (AudioPluginInstance*, const MemoryBlock&);
 
     //==============================================================================
+    /** Attempts to save a VST3 plugin's state to some preset file data.
+
+        @see VSTPluginFormat::saveToFXBFile
+    */
+	static bool saveStateToVSTPresetFile (AudioPluginInstance*, MemoryBlock&);
+
+    //==============================================================================
     String getName() const override             { return "VST3"; }
     void findAllTypesForFile (OwnedArray<PluginDescription>&, const String& fileOrIdentifier) override;
     bool fileMightContainThisPluginType (const String& fileOrIdentifier) override;
