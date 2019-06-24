@@ -197,7 +197,7 @@ struct GraphEditorPanel::FilterComponent   : public Component,
     FilterComponent (const FilterComponent&) = delete;
     FilterComponent& operator= (const FilterComponent&) = delete;
 
-    ~FilterComponent()
+    ~FilterComponent() override
     {
         if (auto f = graph.graph.getNodeForId (pluginID))
         {
@@ -417,6 +417,7 @@ struct GraphEditorPanel::FilterComponent   : public Component,
 
             menu->addItem (13, "Enable DPI awareness", true, isTicked);
            #endif
+            menu->addItem (14, "Show debug log");
         }
 
         menu->addSeparator();
@@ -447,6 +448,7 @@ struct GraphEditorPanel::FilterComponent   : public Component,
                     node->properties.set ("DPIAware", ! node->properties ["DPIAware"]);
                 break;
             }
+            case 14:  showWindow (PluginWindow::Type::debug); break;
             case 20:  showWindow (PluginWindow::Type::audioIO); break;
             case 21:  testStateSaveLoad(); break;
 
@@ -810,7 +812,7 @@ void GraphEditorPanel::updateComponents()
 
     for (auto* f : graph.graph.getNodes())
     {
-        if (getComponentForFilter (f->nodeID) == 0)
+        if (getComponentForFilter (f->nodeID) == nullptr)
         {
             auto* comp = nodes.add (new FilterComponent (*this, f->nodeID));
             addAndMakeVisible (comp);
@@ -820,7 +822,7 @@ void GraphEditorPanel::updateComponents()
 
     for (auto& c : graph.graph.getConnections())
     {
-        if (getComponentForConnection (c) == 0)
+        if (getComponentForConnection (c) == nullptr)
         {
             auto* comp = connectors.add (new ConnectorComponent (*this));
             addAndMakeVisible (comp);
@@ -842,8 +844,8 @@ void GraphEditorPanel::showPopupMenu (Point<int> mousePos)
         menu->showMenuAsync ({},
                              ModalCallbackFunction::create ([this, mousePos] (int r)
                                                             {
-                                                                if (auto* mainWindow = findParentComponentOfClass<MainHostWindow>())
-                                                                    if (auto* desc = mainWindow->getChosenType (r))
+                                                                if (auto* mainWin = findParentComponentOfClass<MainHostWindow>())
+                                                                    if (auto* desc = mainWin->getChosenType (r))
                                                                         createNewPlugin (*desc, mousePos);
                                                             }));
     }

@@ -40,7 +40,7 @@ class JUCE_API  AudioUnitPluginFormat   : public AudioPluginFormat
 public:
     //==============================================================================
     AudioUnitPluginFormat();
-    ~AudioUnitPluginFormat();
+    ~AudioUnitPluginFormat() override;
 
     //==============================================================================
     /** Attempts to reload an AU plugin's state from some preset file data.
