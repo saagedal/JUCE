@@ -50,7 +50,7 @@ public:
     */
     static bool setStateFromVSTPresetFile (AudioPluginInstance*, const MemoryBlock&);
 
-    //==============================================================================
+
     /** Attempts to save a VST3 plugin's state to some preset file data.
 
         @see VSTPluginFormat::saveToFXBFile
@@ -58,7 +58,11 @@ public:
 	static bool saveStateToVSTPresetFile (AudioPluginInstance*, MemoryBlock&);
 
     //==============================================================================
-    String getName() const override             { return "VST3"; }
+    static String getFormatName()                   { return "VST3"; }
+    String getName() const override                 { return getFormatName(); }
+    bool canScanForPlugins() const override         { return true; }
+    bool isTrivialToScan() const override           { return false; }
+
     void findAllTypesForFile (OwnedArray<PluginDescription>&, const String& fileOrIdentifier) override;
     bool fileMightContainThisPluginType (const String& fileOrIdentifier) override;
     String getNameOfPluginFromIdentifier (const String& fileOrIdentifier) override;
@@ -66,16 +70,12 @@ public:
     StringArray searchPathsForPlugins (const FileSearchPath&, bool recursive, bool) override;
     bool doesPluginStillExist (const PluginDescription&) override;
     FileSearchPath getDefaultLocationsToSearch() override;
-    bool canScanForPlugins() const override     { return true; }
-
-private:
-    void createPluginInstance (const PluginDescription&, double initialSampleRate,
-                               int initialBufferSize, void* userData, PluginCreationCallback) override;
-
-    bool requiresUnblockedMessageThreadDuringCreation (const PluginDescription&) const noexcept override;
 
 private:
     //==============================================================================
+    void createPluginInstance (const PluginDescription&, double initialSampleRate,
+                               int initialBufferSize, PluginCreationCallback) override;
+    bool requiresUnblockedMessageThreadDuringCreation (const PluginDescription&) const override;
     void recursiveFileSearch (StringArray&, const File&, bool recursive);
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (VST3PluginFormat)
