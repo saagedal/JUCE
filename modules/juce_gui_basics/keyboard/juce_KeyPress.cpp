@@ -238,14 +238,14 @@ String KeyPress::getTextDescription() const
         if (textCharacter == '/' && keyCode != numberPadDivide)
             return "/";
 
-        if (mods.isCtrlDown())      desc << "ctrl + ";
-        if (mods.isShiftDown())     desc << "shift + ";
+        if (mods.isCtrlDown())      desc << TRANS ("ctrl + ");
+        if (mods.isShiftDown())     desc << TRANS ("shift + ");
 
        #if JUCE_MAC || JUCE_IOS
-        if (mods.isAltDown())       desc << "option + ";
-        if (mods.isCommandDown())   desc << "command + ";
+        if (mods.isAltDown())       desc << TRANS ("option + ");
+        if (mods.isCommandDown())   desc << TRANS ("command + ");
        #else
-        if (mods.isAltDown())       desc << "alt + ";
+        if (mods.isAltDown())       desc << TRANS ("alt + ");
        #endif
 
         for (int i = 0; i < numElementsInArray (KeyPressHelpers::translations); ++i)
