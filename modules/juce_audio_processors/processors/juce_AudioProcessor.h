@@ -896,8 +896,6 @@ public:
 
     //==============================================================================
     /** Returns the parameter that controls the AudioProcessor's bypass state.
-
-        If this method returns a nullptr then you can still control the bypass by
         calling processBlockBypassed instead of processBlock. On the other hand,
         if this method returns a non-null value, you should never call
         processBlockBypassed but use the returned parameter to control the bypass
@@ -1466,7 +1464,8 @@ private:
     Component::SafePointer<AudioProcessorEditor> activeEditor;
     double currentSampleRate = 0;
     int blockSize = 0, latencySamples = 0;
-    bool suspended = false, nonRealtime = false;
+    bool suspended = false;
+    std::atomic<bool> nonRealtime { false };
     ProcessingPrecision processingPrecision = singlePrecision;
     CriticalSection callbackLock, listenerLock, activeEditorLock;
 

@@ -47,6 +47,7 @@
  #pragma clang diagnostic ignored "-Wdeprecated-declarations"
  #pragma clang diagnostic ignored "-Wextra-semi"
  #pragma clang diagnostic ignored "-Wmissing-braces"
+ #pragma clang diagnostic ignored "-Wswitch-default"
  #if __has_warning("-Wshadow-field")
   #pragma clang diagnostic ignored "-Wshadow-field"
  #endif
@@ -111,6 +112,8 @@
  #include <public.sdk/source/common/memorystream.h>
  #include <public.sdk/source/vst/vsteditcontroller.h>
  #include <public.sdk/source/vst/vstpresetfile.h>
+
+ #include "pslextensions/ipslviewembedding.h"
 #else
  // needed for VST_VERSION
  #include <pluginterfaces/vst/vsttypes.h>
@@ -150,6 +153,8 @@
  #include <public.sdk/source/vst/hosting/pluginterfacesupport.cpp>
 #endif
 
+ #include "pslextensions/ipslviewembedding.h"
+
 //==============================================================================
 namespace Steinberg
 {
@@ -166,6 +171,10 @@ namespace Steinberg
     DEF_CLASS_IID (IPlugView)
     DEF_CLASS_IID (IPlugFrame)
     DEF_CLASS_IID (IPlugViewContentScaleSupport)
+}
+namespace Presonus
+{
+    DEF_CLASS_IID (IPlugInViewEmbedding)
 }
 #endif //JUCE_VST3HEADERS_INCLUDE_HEADERS_ONLY
 

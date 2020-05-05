@@ -49,6 +49,7 @@ public:
     virtual bool isGUIApplication() const       { return false; }
     virtual bool isCommandLineApp() const       { return false; }
     virtual bool isAudioPlugin() const          { return false; }
+    virtual bool isARAAudioPlugin() const       { return false; }
 
     //==============================================================================
     struct Target
@@ -191,6 +192,37 @@ struct ProjectType_AudioPlugin  : public ProjectType
             case Target::SharedCodeTarget:
             case Target::AggregateTarget:
                 return true;
+            case Target::GUIApp:
+            case Target::ConsoleApp:
+            case Target::StaticLibrary:
+            case Target::DynamicLibrary:
+            case Target::unspecified:
+            default:
+                break;
+        }
+
+        return false;
+    }
+};
+
+struct ProjectType_ARAAudioPlugin : public ProjectType
+{
+    ProjectType_ARAAudioPlugin() : ProjectType (getTypeName(), "ARA Audio Plug-in") {}
+
+    static const char* getTypeName() noexcept { return "araaudioplug"; }
+    bool isAudioPlugin() const override { return true; }
+    bool isARAAudioPlugin() const override { return true; }
+
+    bool supportsTargetType (Target::Type targetType) const override
+    {
+        switch (targetType)
+        {
+            case Target::VST3PlugIn:
+            case Target::AudioUnitPlugIn:
+            case Target::StandalonePlugIn:
+            case Target::SharedCodeTarget:
+            case Target::AggregateTarget:
+                return true;
             default:
                 break;
         }
@@ -207,6 +239,7 @@ inline Array<ProjectType*> ProjectType::getAllTypes()
     static ProjectType_StaticLibrary staticLib;
     static ProjectType_DLL dll;
     static ProjectType_AudioPlugin plugin;
+    static ProjectType_ARAAudioPlugin araplugin;
 
-    return Array<ProjectType*>(&guiApp, &consoleApp, &staticLib, &dll, &plugin);
+    return Array<ProjectType*>(&guiApp, &consoleApp, &staticLib, &dll, &plugin, &araplugin);
 }

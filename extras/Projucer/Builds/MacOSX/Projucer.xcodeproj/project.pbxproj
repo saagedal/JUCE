@@ -521,6 +521,13 @@
 			path = "../../Source/ComponentEditor/jucer_ComponentLayout.cpp";
 			sourceTree = "SOURCE_ROOT";
 		};
+		14255FC3793D05E64D81F6BC = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			name = "jucer_AudioPluginARADocumentControllerTemplate.h";
+			path = "../../Source/BinaryData/Templates/ARA/jucer_AudioPluginARADocumentControllerTemplate.h";
+			sourceTree = "SOURCE_ROOT";
+		};
 		159DE1FEE2099398983CDDF0 = {
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.h;
@@ -1711,6 +1718,13 @@
 			path = "../../Source/Wizards/jucer_ProjectWizard_DLL.h";
 			sourceTree = "SOURCE_ROOT";
 		};
+		99F17A17224719DBA7EF91C9 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = "jucer_AudioPluginARADocumentControllerTemplate.cpp";
+			path = "../../Source/BinaryData/Templates/ARA/jucer_AudioPluginARADocumentControllerTemplate.cpp";
+			sourceTree = "SOURCE_ROOT";
+		};
 		9A3B8BBDA8E144A3DF6B9349 = {
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.h;
@@ -2690,9 +2704,19 @@
 			name = Icons;
 			sourceTree = "<group>";
 		};
+		339CC8EB6F46305DB6DB4B84 = {
+			isa = PBXGroup;
+			children = (
+				99F17A17224719DBA7EF91C9,
+				14255FC3793D05E64D81F6BC,
+			);
+			name = ARA;
+			sourceTree = "<group>";
+		};
 		E59ABA0D11CBAAD77179E9C6 = {
 			isa = PBXGroup;
 			children = (
+				339CC8EB6F46305DB6DB4B84,
 				9A3B8BBDA8E144A3DF6B9349,
 				016A6C52B0B93DE29197FF64,
 				D5795F8CAC5876714DAB355F,
@@ -3249,7 +3273,7 @@
 				INFOPLIST_PREPROCESS = NO;
 				INSTALL_PATH = "$(HOME)/Applications";
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
-				OTHER_CPLUSPLUSFLAGS = "-Wall -Wshadow-all -Wshorten-64-to-32 -Wstrict-aliasing -Wuninitialized -Wunused-parameter -Wconversion -Wsign-compare -Wint-conversion -Wconditional-uninitialized -Woverloaded-virtual -Wreorder -Wconstant-conversion -Wsign-conversion -Wunused-private-field -Wbool-conversion -Wextra-semi -Wunreachable-code -Wzero-as-null-pointer-constant -Wcast-align -Winconsistent-missing-destructor-override -Wshift-sign-overflow -Wnullable-to-nonnull-conversion -Wno-missing-field-initializers -Wno-ignored-qualifiers";
+				OTHER_CPLUSPLUSFLAGS = "-Wall -Wshadow-all -Wshorten-64-to-32 -Wstrict-aliasing -Wuninitialized -Wunused-parameter -Wconversion -Wsign-compare -Wint-conversion -Wconditional-uninitialized -Woverloaded-virtual -Wreorder -Wconstant-conversion -Wsign-conversion -Wunused-private-field -Wbool-conversion -Wextra-semi -Wunreachable-code -Wzero-as-null-pointer-constant -Wcast-align -Winconsistent-missing-destructor-override -Wshift-sign-overflow -Wnullable-to-nonnull-conversion -Wno-missing-field-initializers -Wno-ignored-qualifiers -Wswitch-enum";
 				PRODUCT_BUNDLE_IDENTIFIER = com.juce.theprojucer;
 				PRODUCT_NAME = "Projucer";
 				USE_HEADERMAP = NO;
@@ -3283,7 +3307,6 @@
 					"JucePlugin_Build_Standalone=0",
 					"JucePlugin_Build_Unity=0",
 				);
-				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				HEADER_SEARCH_PATHS = (
 					"../../JuceLibraryCode",
@@ -3294,7 +3317,7 @@
 				INFOPLIST_PREPROCESS = NO;
 				INSTALL_PATH = "$(HOME)/Applications";
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
-				OTHER_CPLUSPLUSFLAGS = "-Wall -Wshadow-all -Wshorten-64-to-32 -Wstrict-aliasing -Wuninitialized -Wunused-parameter -Wconversion -Wsign-compare -Wint-conversion -Wconditional-uninitialized -Woverloaded-virtual -Wreorder -Wconstant-conversion -Wsign-conversion -Wunused-private-field -Wbool-conversion -Wextra-semi -Wunreachable-code -Wzero-as-null-pointer-constant -Wcast-align -Winconsistent-missing-destructor-override -Wshift-sign-overflow -Wnullable-to-nonnull-conversion -Wno-missing-field-initializers -Wno-ignored-qualifiers";
+				OTHER_CPLUSPLUSFLAGS = "-Wall -Wshadow-all -Wshorten-64-to-32 -Wstrict-aliasing -Wuninitialized -Wunused-parameter -Wconversion -Wsign-compare -Wint-conversion -Wconditional-uninitialized -Woverloaded-virtual -Wreorder -Wconstant-conversion -Wsign-conversion -Wunused-private-field -Wbool-conversion -Wextra-semi -Wunreachable-code -Wzero-as-null-pointer-constant -Wcast-align -Winconsistent-missing-destructor-override -Wshift-sign-overflow -Wnullable-to-nonnull-conversion -Wno-missing-field-initializers -Wno-ignored-qualifiers -Wswitch-enum";
 				PRODUCT_BUNDLE_IDENTIFIER = com.juce.theprojucer;
 				PRODUCT_NAME = "Projucer";
 				USE_HEADERMAP = NO;
@@ -3326,11 +3349,12 @@
 				CODE_SIGN_IDENTITY = "";
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				ENABLE_TESTABILITY = YES;
+				ENABLE_TESTABILITY = NO;
 				GCC_C_LANGUAGE_STANDARD = c11;
 				GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
 				GCC_MODEL_TUNING = G5;
 				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_CHECK_SWITCH_STATEMENTS = YES;
@@ -3374,10 +3398,12 @@
 				CODE_SIGN_IDENTITY = "";
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = NO;
 				GCC_C_LANGUAGE_STANDARD = c11;
 				GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
 				GCC_MODEL_TUNING = G5;
 				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_CHECK_SWITCH_STATEMENTS = YES;

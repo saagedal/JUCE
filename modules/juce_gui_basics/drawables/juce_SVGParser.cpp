@@ -1198,7 +1198,7 @@ private:
             auto linkedFile = originalFile.getParentDirectory().getChildFile (link);
 
             if (linkedFile.existsAsFile())
-                inputStream.reset (linkedFile.createInputStream());
+                inputStream = linkedFile.createInputStream();
         }
 
         if (inputStream != nullptr)

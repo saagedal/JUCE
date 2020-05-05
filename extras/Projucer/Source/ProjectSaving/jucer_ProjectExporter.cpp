@@ -80,6 +80,7 @@ ProjectExporter* ProjectExporter::createNewExporter (Project& project, const int
         case 7:     exp = new CodeBlocksProjectExporter    (project, ValueTree (CodeBlocksProjectExporter    ::getValueTreeTypeName (CodeBlocksProjectExporter::windowsTarget)), CodeBlocksProjectExporter::windowsTarget); break;
         case 8:     exp = new CodeBlocksProjectExporter    (project, ValueTree (CodeBlocksProjectExporter    ::getValueTreeTypeName (CodeBlocksProjectExporter::linuxTarget)),   CodeBlocksProjectExporter::linuxTarget); break;
         case 9:     exp = new CLionProjectExporter         (project, ValueTree (CLionProjectExporter         ::getValueTreeTypeName())); break;
+        default:    break;
     }
 
     exp->createDefaultConfigs();
@@ -338,6 +339,11 @@ void ProjectExporter::createPropertyEditors (PropertyListBuilder& props)
                                                       getTargetOSForExporter() == TargetOS::getThisOS(), "*", project.getProjectFolder()),
                        "If you're building an RTAS plug-in, this must be the folder containing the RTAS SDK. This can be an absolute path, or a path relative to the Projucer project file.");
         }
+        if (project.shouldEnableARA() || project.isARAPluginHost())
+        {
+            props.add (new FilePathPropertyComponent (araPathValueWrapper.wrappedValue, "ARA SDK Folder", true, getTargetOSForExporter() == TargetOS::getThisOS()),
+                       "If you're building an ARA enabled plug-in, this must be the folder containing the ARA SDK. This can be an absolute path, or a path relative to the Projucer project file.");
+        }
 
         props.add (new TextPropertyComponent (extraPPDefsValue, "Extra Preprocessor Definitions", 32768, true),
                    "Extra preprocessor definitions. Use the form \"NAME1=value NAME2=value\", using whitespace, commas, "
@@ -401,6 +407,8 @@ void ProjectExporter::addSettingsForProjectType (const ProjectType& type)
 {
     addVSTPathsIfPluginOrHost();
 
+    addARAPathsIfPluginOrHost();
+
     if (type.isAudioPlugin())
         addCommonAudioPluginSettings();
 
@@ -415,6 +423,12 @@ void ProjectExporter::addVSTPathsIfPluginOrHost()
         addLegacyVSTFolderToPathIfSpecified();
         addVST3FolderToPath();
     }
+}
+
+void ProjectExporter::addARAPathsIfPluginOrHost()
+{
+    if (project.shouldEnableARA() || project.isARAPluginHost())
+        addARAFoldersToPath();
 }
 
 void ProjectExporter::addCommonAudioPluginSettings()
@@ -464,6 +478,14 @@ void ProjectExporter::addAAXFoldersToPath()
     }
 }
 
+void ProjectExporter::addARAFoldersToPath()
+{
+    auto araFolder = getARAPathString();
+
+    if (araFolder.isNotEmpty())
+        addToExtraSearchPaths (RelativePath (araFolder, RelativePath::projectFolder));
+}
+
 //==============================================================================
 StringPairArray ProjectExporter::getAllPreprocessorDefs (const BuildConfiguration& config, const ProjectType::Target::Type targetType) const
 {
@@ -507,6 +529,11 @@ void ProjectExporter::addTargetSpecificPreprocessorDefs (StringPairArray& defs, 
     {
         for (auto& flag : targetFlags)
             defs.set (flag.first, (targetType == flag.second ? "1" : "0"));
+    }
+
+    if (project.shouldEnableARA())
+    {
+        defs.set("JucePlugin_Enable_ARA", "1");
     }
 }
 
@@ -927,11 +954,15 @@ ProjectExporter::BuildConfiguration::BuildConfiguration (Project& p, const Value
         "-Wreorder", "-Wconstant-conversion", "-Wsign-conversion", "-Wunused-private-field", "-Wbool-conversion",
         "-Wextra-semi", "-Wunreachable-code", "-Wzero-as-null-pointer-constant", "-Wcast-align",
         "-Winconsistent-missing-destructor-override", "-Wshift-sign-overflow", "-Wnullable-to-nonnull-conversion",
-        "-Wno-missing-field-initializers", "-Wno-ignored-qualifiers" };
+        "-Wno-missing-field-initializers", "-Wno-ignored-qualifiers",
+        "-Wswitch-enum"
+    };
     recommendedCompilerWarningFlags["GCC"] = { "-Wall", "-Wextra", "-Wstrict-aliasing", "-Wuninitialized", "-Wunused-parameter", "-Wsign-compare",
         "-Woverloaded-virtual", "-Wreorder", "-Wsign-conversion", "-Wunreachable-code",
         "-Wzero-as-null-pointer-constant", "-Wcast-align", "-Wno-implicit-fallthrough",
-        "-Wno-maybe-uninitialized", "-Wno-missing-field-initializers", "-Wno-ignored-qualifiers" };
+        "-Wno-maybe-uninitialized", "-Wno-missing-field-initializers", "-Wno-ignored-qualifiers",
+        "-Wswitch-enum", "-Wswitch-default", "-Wredundant-decls"
+    };
     recommendedCompilerWarningFlags["GCC-7"] = recommendedCompilerWarningFlags["GCC"];
     recommendedCompilerWarningFlags["GCC-7"].add ("-Wno-strict-overflow");
 }
