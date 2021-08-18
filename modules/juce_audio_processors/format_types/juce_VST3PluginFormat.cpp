@@ -2450,7 +2450,7 @@ public:
 
     bool saveStateToPresetFile (MemoryBlock& rawData)
     {
-        ComSmartPtr<Steinberg::MemoryStream> memoryStream = new Steinberg::MemoryStream ();
+        VSTComSmartPtr<Steinberg::MemoryStream> memoryStream = new Steinberg::MemoryStream ();
 
         if (memoryStream == nullptr || holder->component == nullptr)
             return false;
