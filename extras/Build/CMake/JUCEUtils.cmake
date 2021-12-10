@@ -83,12 +83,6 @@ set_property(GLOBAL PROPERTY JUCE_COPY_PLUGIN_AFTER_BUILD FALSE)
 if((CMAKE_SYSTEM_NAME STREQUAL "Linux") OR (CMAKE_SYSTEM_NAME MATCHES ".*BSD"))
     _juce_create_pkgconfig_target(JUCE_CURL_LINUX_DEPS libcurl)
     _juce_create_pkgconfig_target(JUCE_BROWSER_LINUX_DEPS webkit2gtk-4.0 gtk+-x11-3.0)
-elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-    find_program(JUCE_XCRUN xcrun)
-
-    if(NOT JUCE_XCRUN)
-        message(WARNING "failed to find xcrun; older resource-based AU plug-ins may not work correctly")
-    endif()
 endif()
 
 # We set up default/fallback copy dirs here. If you need different copy dirs, use
@@ -139,67 +133,6 @@ function(juce_add_bundle_resources_directory target folder)
             HEADER_FILE_ONLY TRUE
             MACOSX_PACKAGE_LOCATION "Resources/${resource_parent_path}")
     endforeach()
-endfunction()
-
-# ==================================================================================================
-
-function(_juce_add_au_resource_fork shared_code_target au_target)
-    if(NOT JUCE_XCRUN)
-        return()
-    endif()
-
-    get_target_property(product_name ${shared_code_target} JUCE_PRODUCT_NAME)
-    get_target_property(module_sources juce::juce_audio_plugin_client_AU INTERFACE_SOURCES)
-
-    list(FILTER module_sources INCLUDE REGEX "/juce_audio_plugin_client_AU.r$")
-
-    if(NOT module_sources)
-        message(FATAL_ERROR "Failed to find AU resource file input")
-    endif()
-
-    list(GET module_sources 0 au_rez_sources)
-
-    get_target_property(juce_library_code ${shared_code_target} JUCE_GENERATED_SOURCES_DIRECTORY)
-    # We don't want our AU AppConfig.h to end up on peoples' include paths if we can help it
-    set(secret_au_resource_dir "${juce_library_code}/${au_target}/secret")
-    set(secret_au_plugindefines "${secret_au_resource_dir}/JucePluginDefines.h")
-
-    set(au_rez_output "${secret_au_resource_dir}/${product_name}.rsrc")
-
-    target_sources(${au_target} PRIVATE "${au_rez_output}")
-    set_source_files_properties("${au_rez_output}" PROPERTIES
-        GENERATED TRUE
-        MACOSX_PACKAGE_LOCATION Resources)
-
-    set(defs_file $<GENEX_EVAL:$<TARGET_PROPERTY:${shared_code_target},JUCE_DEFS_FILE>>)
-
-    # Passing all our compile definitions using generator expressions is really painful
-    # because some of the definitions have pipes and quotes and dollars and goodness-knows
-    # what else that the shell would very much like to claim for itself, thank you very much.
-    # CMake definitely knows how to escape all these things, because it's perfectly happy to pass
-    # them to compiler invocations, but I have no idea how to get it to escape them
-    # in a custom command.
-    # In the end, it's simplest to generate a special single-purpose appconfig just for the
-    # resource compiler.
-    add_custom_command(OUTPUT "${secret_au_plugindefines}"
-        COMMAND juce::juceaide auplugindefines "${defs_file}" "${secret_au_plugindefines}"
-        DEPENDS "${defs_file}"
-        VERBATIM)
-
-    add_custom_command(OUTPUT "${au_rez_output}"
-        COMMAND "${JUCE_XCRUN}" Rez
-            -d "ppc_$ppc" -d "i386_$i386" -d "ppc64_$ppc64" -d "x86_64_$x86_64" -d "arm64_$arm64"
-            -I "${secret_au_resource_dir}"
-            -I "/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Versions/A/Headers"
-            -I "${CMAKE_OSX_SYSROOT}/System/Library/Frameworks/AudioUnit.framework/Headers"
-            -isysroot "${CMAKE_OSX_SYSROOT}"
-            "${au_rez_sources}"
-            -useDF
-            -o "${au_rez_output}"
-        DEPENDS "${secret_au_plugindefines}"
-        VERBATIM)
-
-    set(au_resource_directory "$<TARGET_BUNDLE_DIR:${au_target}>/Contents/Resources")
 endfunction()
 
 # ==================================================================================================
@@ -321,6 +254,7 @@ function(_juce_write_configure_time_info target)
     _juce_append_target_property(file_content APP_GROUP_IDS                        ${target} JUCE_APP_GROUP_IDS)
     _juce_append_target_property(file_content IS_PLUGIN                            ${target} JUCE_IS_PLUGIN)
     _juce_append_target_property(file_content ICLOUD_PERMISSIONS_ENABLED           ${target} JUCE_ICLOUD_PERMISSIONS_ENABLED)
+    _juce_append_target_property(file_content IS_PLUGIN_ARA_EFFECT                 ${target} JUCE_IS_ARA_EFFECT)
 
     if(CMAKE_SYSTEM_NAME STREQUAL "iOS")
         _juce_append_record(file_content IS_IOS 1)
@@ -1178,7 +1112,13 @@ function(_juce_configure_plugin_targets target)
         JucePlugin_AAXDisableBypass=$<BOOL:$<TARGET_PROPERTY:${target},JUCE_DISABLE_AAX_BYPASS>>
         JucePlugin_AAXDisableMultiMono=$<BOOL:$<TARGET_PROPERTY:${target},JUCE_DISABLE_AAX_MULTI_MONO>>
         JucePlugin_VSTNumMidiInputs=$<TARGET_PROPERTY:${target},JUCE_VST_NUM_MIDI_INS>
-        JucePlugin_VSTNumMidiOutputs=$<TARGET_PROPERTY:${target},JUCE_VST_NUM_MIDI_OUTS>)
+        JucePlugin_VSTNumMidiOutputs=$<TARGET_PROPERTY:${target},JUCE_VST_NUM_MIDI_OUTS>
+        JucePlugin_Enable_ARA=$<BOOL:$<TARGET_PROPERTY:${target},JUCE_IS_ARA_EFFECT>>
+        JucePlugin_ARAFactoryID=$<TARGET_PROPERTY:${target},JUCE_ARA_FACTORY_ID>
+        JucePlugin_ARADocumentArchiveID=$<TARGET_PROPERTY:${target},JUCE_ARA_DOCUMENT_ARCHIVE_ID>
+        JucePlugin_ARACompatibleArchiveIDs=$<TARGET_PROPERTY:${target},JUCE_ARA_COMPATIBLE_ARCHIVE_IDS>
+        JucePlugin_ARAContentTypes=$<TARGET_PROPERTY:${target},JUCE_ARA_ANALYSIS_TYPES>
+        JucePlugin_ARATransformationFlags=$<TARGET_PROPERTY:${target},JUCE_ARA_TRANSFORMATION_FLAGS>)
 
     set_target_properties(${target} PROPERTIES
         POSITION_INDEPENDENT_CODE TRUE
@@ -1203,10 +1143,6 @@ function(_juce_configure_plugin_targets target)
 
     if(TARGET ${target}_Standalone)
         _juce_configure_app_bundle(${target} ${target}_Standalone)
-    endif()
-
-    if(TARGET ${target}_AU)
-        _juce_add_au_resource_fork(${target} ${target}_AU)
     endif()
 
     if(TARGET ${target}_AAX)
@@ -1453,6 +1389,15 @@ function(_juce_set_fallback_properties target)
     if(NOT aax_category_int STREQUAL "")
         set_target_properties(${target} PROPERTIES JUCE_AAX_CATEGORY ${aax_category_int})
     endif()
+
+    # ARA configuration
+    _juce_set_property_if_not_set(${target} IS_ARA_EFFECT FALSE)
+    get_target_property(final_bundle_id ${target} JUCE_BUNDLE_ID)
+    _juce_set_property_if_not_set(${target} ARA_FACTORY_ID "\"${final_bundle_id}.arafactory.${final_version}\"")
+    _juce_set_property_if_not_set(${target} ARA_DOCUMENT_ARCHIVE_ID "\"${final_bundle_id}.aradocumentarchive.1\"")
+    _juce_set_property_if_not_set(${target} ARA_COMPATIBLE_ARCHIVE_IDS "\"\"")
+    _juce_set_property_if_not_set(${target} ARA_ANALYSIS_TYPES 0)
+    _juce_set_property_if_not_set(${target} ARA_TRANSFORMATION_FLAGS 0)
 endfunction()
 
 # ==================================================================================================
@@ -1518,6 +1463,11 @@ function(_juce_initialise_target target)
         SUPPRESS_AU_PLIST_RESOURCE_USAGE
         PLUGINHOST_AU                   # Set this true if you want to host AU plugins
         USE_LEGACY_COMPATIBILITY_PLUGIN_CODE
+        IS_ARA_EFFECT
+        ARA_FACTORY_ID
+        ARA_DOCUMENT_ARCHIVE_ID
+        ARA_ANALYSIS_TYPES
+        ARA_TRANSFORMATION_FLAGS
 
         VST_COPY_DIR
         VST3_COPY_DIR
@@ -1535,7 +1485,8 @@ function(_juce_initialise_target target)
         AAX_CATEGORY
         IPHONE_SCREEN_ORIENTATIONS      # iOS only
         IPAD_SCREEN_ORIENTATIONS        # iOS only
-        APP_GROUP_IDS)                  # iOS only
+        APP_GROUP_IDS                   # iOS only
+        ARA_COMPATIBLE_ARCHIVE_IDS)
 
     cmake_parse_arguments(JUCE_ARG "" "${one_value_args}" "${multi_value_args}" ${ARGN})
 
