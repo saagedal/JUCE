@@ -50,7 +50,8 @@
 #include "../utility/juce_LinuxMessageThread.h"
 #include <juce_audio_processors/format_types/juce_LegacyAudioParameter.cpp>
 #include <juce_audio_processors/format_types/juce_VST3Common.h>
-
+#include <pluginterfaces/base/keycodes.h>
+ 
 #ifndef JUCE_VST3_CAN_REPLACE_VST2
  #define JUCE_VST3_CAN_REPLACE_VST2 1
 #endif
@@ -1899,6 +1900,160 @@ private:
             ignoreUnused (factor);
             return kResultFalse;
            #endif
+        }
+
+        // Custom code for ARA keystroke handling.
+        tresult PLUGIN_API onKeyDown (char16 key, int16 keyCode, int16 modifiers) override
+        {
+            auto peer = component->getPeer();
+            
+            if ((peer != nullptr) && (component->hasKeyboardFocus (true)) && (modifiers & KeyModifier::kCommandKey))
+            {
+                int juceKeyCode = 0;
+                switch (keyCode)
+                {
+                    case 0: // No virtual key
+                        juceKeyCode = key;
+                        break;
+                    case VirtualKeyCodes::KEY_BACK:
+                        juceKeyCode = KeyPress::backspaceKey;
+                        break;
+                    case VirtualKeyCodes::KEY_TAB:
+                        juceKeyCode = KeyPress::tabKey;
+                        break;
+                    case VirtualKeyCodes::KEY_RETURN:
+                        juceKeyCode = KeyPress::returnKey;
+                        break;
+                    case VirtualKeyCodes::KEY_ESCAPE:
+                        juceKeyCode = KeyPress::escapeKey;
+                        break;
+                    case VirtualKeyCodes::KEY_SPACE:
+                        juceKeyCode = KeyPress::spaceKey;
+                        break;
+                    case VirtualKeyCodes::KEY_HOME:
+                        juceKeyCode = KeyPress::homeKey;
+                        break;
+                    case VirtualKeyCodes::KEY_END:
+                        juceKeyCode = KeyPress::endKey;
+                        break;
+                    case VirtualKeyCodes::KEY_LEFT:
+                        juceKeyCode = KeyPress::leftKey;
+                        break;
+                    case VirtualKeyCodes::KEY_UP:
+                        juceKeyCode = KeyPress::upKey;
+                        break;
+                    case VirtualKeyCodes::KEY_RIGHT:
+                        juceKeyCode = KeyPress::rightKey;
+                        break;
+                    case VirtualKeyCodes::KEY_DOWN:
+                        juceKeyCode = KeyPress::downKey;
+                        break;
+                    case VirtualKeyCodes::KEY_PAGEUP:
+                        juceKeyCode = KeyPress::pageUpKey;
+                        break;
+                    case VirtualKeyCodes::KEY_PAGEDOWN:
+                        juceKeyCode = KeyPress::pageDownKey;
+                        break;
+                    case VirtualKeyCodes::KEY_ENTER:
+                        juceKeyCode = KeyPress::returnKey;
+                        break;
+                    case VirtualKeyCodes::KEY_INSERT:
+                        juceKeyCode = KeyPress::insertKey;
+                        break;
+                    case VirtualKeyCodes::KEY_DELETE:
+                        juceKeyCode = KeyPress::deleteKey;
+                        break;
+                    case VirtualKeyCodes::KEY_NUMPAD0:
+                        juceKeyCode = KeyPress::numberPad0;
+                        break;
+                    case VirtualKeyCodes::KEY_NUMPAD1:
+                        juceKeyCode = KeyPress::numberPad1;
+                        break;
+                    case VirtualKeyCodes::KEY_NUMPAD2:
+                        juceKeyCode = KeyPress::numberPad2;
+                        break;
+                    case VirtualKeyCodes::KEY_NUMPAD3:
+                        juceKeyCode = KeyPress::numberPad3;
+                        break;
+                    case VirtualKeyCodes::KEY_NUMPAD4:
+                        juceKeyCode = KeyPress::numberPad4;
+                        break;
+                    case VirtualKeyCodes::KEY_NUMPAD5:
+                        juceKeyCode = KeyPress::numberPad5;
+                        break;
+                    case VirtualKeyCodes::KEY_NUMPAD6:
+                        juceKeyCode = KeyPress::numberPad6;
+                        break;
+                    case VirtualKeyCodes::KEY_NUMPAD7:
+                        juceKeyCode = KeyPress::numberPad7;
+                        break;
+                    case VirtualKeyCodes::KEY_NUMPAD8:
+                        juceKeyCode = KeyPress::numberPad8;
+                        break;
+                    case VirtualKeyCodes::KEY_NUMPAD9:
+                        juceKeyCode = KeyPress::numberPad9;
+                        break;
+                    case VirtualKeyCodes::KEY_MULTIPLY:
+                        juceKeyCode = KeyPress::numberPadMultiply;
+                        break;
+                    case VirtualKeyCodes::KEY_ADD:
+                        juceKeyCode = KeyPress::numberPadAdd;
+                        break;
+                    case VirtualKeyCodes::KEY_SEPARATOR:
+                        juceKeyCode = KeyPress::numberPadSeparator;
+                        break;
+                    case VirtualKeyCodes::KEY_SUBTRACT:
+                        juceKeyCode = KeyPress::numberPadSubtract;
+                        break;
+                    case VirtualKeyCodes::KEY_DECIMAL:
+                        juceKeyCode = KeyPress::numberPadDecimalPoint;
+                        break;
+                    case VirtualKeyCodes::KEY_DIVIDE:
+                        juceKeyCode = KeyPress::numberPadDivide;
+                        break;
+                    case VirtualKeyCodes::KEY_F1:
+                        juceKeyCode = KeyPress::F1Key;
+                        break;
+                    case VirtualKeyCodes::KEY_F2:
+                        juceKeyCode = KeyPress::F2Key;
+                        break;
+                    case VirtualKeyCodes::KEY_F3:
+                        juceKeyCode = KeyPress::F3Key;
+                        break;
+                    case VirtualKeyCodes::KEY_F4:
+                        juceKeyCode = KeyPress::F4Key;
+                        break;
+                    case VirtualKeyCodes::KEY_F5:
+                        juceKeyCode = KeyPress::F5Key;
+                        break;
+                    case VirtualKeyCodes::KEY_F6:
+                        juceKeyCode = KeyPress::F6Key;
+                        break;
+                    case VirtualKeyCodes::KEY_F7:
+                        juceKeyCode = KeyPress::F7Key;
+                        break;
+                    case VirtualKeyCodes::KEY_F8:
+                        juceKeyCode = KeyPress::F8Key;
+                        break;
+                    case VirtualKeyCodes::KEY_F9:
+                        juceKeyCode = KeyPress::F9Key;
+                        break;
+                    case VirtualKeyCodes::KEY_F10:
+                        juceKeyCode = KeyPress::F10Key;
+                        break;
+                    case VirtualKeyCodes::KEY_F11:
+                        juceKeyCode = KeyPress::F11Key;
+                        break;
+                    case VirtualKeyCodes::KEY_F12:
+                        juceKeyCode = KeyPress::F12Key;
+                        break;
+                    default:
+                        return kResultFalse;
+                }
+                return peer->handleKeyPress (KeyPress (juceKeyCode, ModifierKeys::commandModifier, key)) ? kResultTrue : kResultFalse;
+            }
+
+            return kResultFalse;
         }
 
     private:
