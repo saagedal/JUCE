@@ -3078,25 +3078,6 @@ public:
                                                        holder->component, editController, nullptr);
     }
 
-    bool saveStateToPresetFile (MemoryBlock& rawData)
-    {
-        VSTComSmartPtr<Steinberg::MemoryStream> memoryStream = new Steinberg::MemoryStream ();
-
-        if (memoryStream == nullptr || holder->component == nullptr)
-            return false;
-
-        if (!Steinberg::Vst::PresetFile::savePreset (memoryStream, holder->cidOfComponent,
-                                                     holder->component, editController, nullptr))
-        {
-            return false;
-        }
-
-        rawData.setSize ((int) memoryStream->getSize());
-        rawData.copyFrom (memoryStream->getData(), 0, (int) memoryStream->getSize());
-
-        return true;
-    }
-
     //==============================================================================
     void fillInPluginDescription (PluginDescription& description) const override
     {
@@ -3800,14 +3781,6 @@ bool VST3PluginFormat::setStateFromVSTPresetFile (AudioPluginInstance* api, cons
 {
     if (auto vst3 = dynamic_cast<VST3PluginInstance*> (api))
         return vst3->setStateFromPresetFile (rawData);
-
-    return false;
-}
-
-bool VST3PluginFormat::saveStateToVSTPresetFile (AudioPluginInstance* api, MemoryBlock& rawData)
-{
-    if (auto vst3 = dynamic_cast<VST3PluginInstance*> (api))
-        return vst3->saveStateToPresetFile (rawData);
 
     return false;
 }
