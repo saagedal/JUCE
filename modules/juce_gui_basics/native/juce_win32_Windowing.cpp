@@ -2042,6 +2042,7 @@ public:
     void repaint (const Rectangle<int>& area) override
     {
         deferredRepaints.add ((area.toDouble() * getPlatformScaleFactor()).getSmallestIntegerContainer());
+        dispatchDeferredRepaints();
     }
 
     void dispatchDeferredRepaints()
