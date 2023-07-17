@@ -230,6 +230,9 @@ void Label::showEditor()
         editor->addListener (this);
         editor->grabKeyboardFocus();
 
+        if (getJustificationType().testFlags (Justification::horizontallyCentred))
+            editor->setJustification (Justification::centredTop);
+
         if (editor == nullptr) // may be deleted by a callback
             return;
 
