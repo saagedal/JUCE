@@ -511,8 +511,9 @@ bool Button::isMouseSourceOver (const MouseEvent& e)
     return isMouseOver();
 }
 
-void Button::focusGained (FocusChangeType)
+void Button::focusGained (FocusChangeType cause)
 {
+    lastFocusChangeCause = cause;
     updateState();
     repaint();
 }
@@ -664,6 +665,11 @@ bool Button::keyPressed (const KeyPress& key)
     }
 
     return false;
+}
+
+Component::FocusChangeType Button::getLastFocusChangeCause()
+{
+    return lastFocusChangeCause;
 }
 
 //==============================================================================

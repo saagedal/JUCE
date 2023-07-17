@@ -384,6 +384,10 @@ public:
     /** Returns the button's current over/down/up state. */
     ButtonState getState() const noexcept               { return buttonState; }
 
+
+    /** Acon Digital changes */
+    FocusChangeType getLastFocusChangeCause();
+
     //==============================================================================
     /** This abstract base class is implemented by LookAndFeel classes to provide
         button-drawing functionality.
@@ -521,6 +525,9 @@ private:
     bool isKeyDown = false;
     bool triggerOnMouseDown = false;
     bool generateTooltip = false;
+
+    // Acon Digital change
+    FocusChangeType lastFocusChangeCause = focusChangedDirectly;
 
     std::unique_ptr<AccessibilityHandler> createAccessibilityHandler() override;
     void checkToggleableState (bool wasToggleable);
