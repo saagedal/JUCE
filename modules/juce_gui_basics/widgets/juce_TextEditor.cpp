@@ -1843,6 +1843,20 @@ void TextEditor::performPopupMenuAction (const int menuItemID)
 }
 
 //==============================================================================
+// Acon Digital change - Start
+void TextEditor::mouseEnter (const MouseEvent& e)
+{
+    Component::mouseEnter (e);
+    repaint();
+}
+
+void TextEditor::mouseExit (const MouseEvent& e)
+{
+    Component::mouseExit (e);
+    repaint();
+}
+// Acon Digital change - End
+
 void TextEditor::mouseDown (const MouseEvent& e)
 {
     beginDragAutoRepeat (100);

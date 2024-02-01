@@ -551,6 +551,20 @@ void ComboBox::showPopup()
 }
 
 //==============================================================================
+// Acon Digital change - Start
+void ComboBox::mouseEnter (const MouseEvent& e)
+{
+    Component::mouseEnter (e);
+    repaint();
+}
+
+void ComboBox::mouseExit (const MouseEvent& e)
+{
+    Component::mouseExit (e);
+    repaint();
+}
+// Acon Digital change - End
+
 void ComboBox::mouseDown (const MouseEvent& e)
 {
     beginDragAutoRepeat (300);

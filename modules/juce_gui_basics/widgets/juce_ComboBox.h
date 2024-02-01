@@ -397,6 +397,11 @@ public:
     void handleAsyncUpdate() override;
     /** @internal */
     String getTooltip() override                        { return label->getTooltip(); }
+    // Acon Digital Change
+    /** @internal */
+    void mouseEnter (const MouseEvent&) override;
+    /** @internal */
+    void mouseExit (const MouseEvent&) override;
     /** @internal */
     void mouseDown (const MouseEvent&) override;
     /** @internal */
