@@ -176,7 +176,7 @@ KeyPress KeyPress::createFromDescription (const String& desc)
     int modifiers = 0;
 
     for (int i = 0; i < numElementsInArray (KeyPressHelpers::modifierNames); ++i)
-        if (desc.containsWholeWordIgnoreCase (KeyPressHelpers::modifierNames[i].name))
+        if (desc.containsWholeWordIgnoreCase (TRANS (KeyPressHelpers::modifierNames[i].name)))
             modifiers |= KeyPressHelpers::modifierNames[i].flag;
 
     int key = 0;
@@ -237,14 +237,14 @@ String KeyPress::getTextDescription() const
         if (textCharacter == '/' && keyCode != numberPadDivide)
             return "/";
 
-        if (mods.isCtrlDown())      desc << TRANS ("ctrl + ");
-        if (mods.isShiftDown())     desc << TRANS ("shift + ");
+        if (mods.isCtrlDown())      desc << TRANS ("ctrl") + " + ";
+        if (mods.isShiftDown())     desc << TRANS ("shift") + " + ";
 
        #if JUCE_MAC || JUCE_IOS
-        if (mods.isAltDown())       desc << TRANS ("option + ");
-        if (mods.isCommandDown())   desc << TRANS ("command + ");
+        if (mods.isAltDown())       desc << TRANS ("option") + " + ";
+        if (mods.isCommandDown())   desc << TRANS ("command") + " + ";
        #else
-        if (mods.isAltDown())       desc << TRANS ("alt + ");
+        if (mods.isAltDown())       desc << TRANS ("alt") + " + ";
        #endif
 
         for (int i = 0; i < numElementsInArray (KeyPressHelpers::translations); ++i)
